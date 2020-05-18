@@ -1,0 +1,13 @@
+org: ansible-collections
+repos:
+  - cisco.nxos
+  - cisco.ios
+  - cisco.iosxr
+  - arista.eos
+  - vyos.vyos
+  - junipernetworks.junos
+  - cisco.asa
+maintainers:
+  - name: Nilashish Chakraborty
+    email: test@abc.com
+timedelta: 7
