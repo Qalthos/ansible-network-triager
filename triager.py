@@ -11,9 +11,7 @@ REQUEST_FMT = "https://api.github.com/repos/{0}/{1}/issues"
 class Triager:
     def __init__(self, cfg="config.yaml"):
         self.oauth_token = os.getenv("GH_TOKEN")
-        self.load_config(cfg)
 
-    def load_config(self, cfg):
         with open(cfg, "r") as config_file:
             config = yaml.safe_load(config_file)
 
