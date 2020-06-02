@@ -1,7 +1,6 @@
-from triager import Triager
-from tablemaker import make_table
-from mailer import send_mail
-
+from triager.triager import Triager
+from triager.tablemaker import make_table
+from triager.mailer import send_mail
 
 if __name__ == "__main__":
     triager = Triager()
