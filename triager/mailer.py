@@ -3,10 +3,13 @@ import smtplib
 from datetime import date
 from email.message import EmailMessage
 
+import prettytable
 
-def send_mail(content, config):
+from triager.config import Config
+
+
+def send_mail(content: prettytable.PrettyTable, config: Config) -> None:
     logging.info("attempting to send email to maintainers")
-
     msg = EmailMessage()
     msg["From"] = config.sender["email"]
     msg["To"] = config.maintainers

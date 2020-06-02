@@ -1,13 +1,16 @@
 import logging
+from typing import Dict, List, TypedDict
 
 import requests
 
+from triager.config import Config
 
+Issue = TypedDict("Issue", {"url": str, "title": str, "type": str})
 REQUEST_FMT = "https://api.github.com/repos/{0}/{1}/issues"
 
 
-def triage(config):
-    issues = {}
+def triage(config: Config) -> Dict[str, List[Issue]]:
+    issues: Dict[str, List[Issue]] = {}
     for org, repo in config.repos:
         repo_name = repo["name"]
         repo_labels = repo.get("labels", [])

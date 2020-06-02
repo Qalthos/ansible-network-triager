@@ -9,7 +9,7 @@ from triager.release import __ver__
 from triager.tablemaker import make_table
 
 
-def run(args):
+def run(args: argparse.Namespace) -> None:
     # setup logger
     logging_level = logging.DEBUG if args.debug else logging.INFO
     if args.log_to_file:
@@ -31,7 +31,7 @@ def run(args):
             send_mail(content=table, config=config)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Triage issues and pull-requests from repositories of interest.",
         prog="Ansible Network Triager",

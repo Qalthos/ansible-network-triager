@@ -3,12 +3,24 @@ import os
 import sys
 from datetime import datetime, timedelta
 from email.headerregistry import Address
+from typing import Dict, List, Tuple, TypedDict
 
 import yaml
 
+EmailConfig = TypedDict(
+    "EmailConfig", {"email": str, "password": str}, total=False
+)
+Repository = TypedDict("Repository", {"name": str, "labels": List[str]})
+
 
 class Config:
-    def __init__(self, config_location):
+    repos: List[Tuple[str, Repository]]
+    maintainers: List[Address]
+    sender: EmailConfig
+
+    last_triage_date: datetime
+
+    def __init__(self, config_location: str):
         # select config.yaml from cwd
         if not config_location:
             logging.info("config file not specified, setting default")
@@ -42,7 +54,7 @@ class Config:
 
         # Set address to send triage emails from
         logging.debug("parsing triager email and password from config file")
-        self.sender = None
+        self.sender = {}
         if "triager" in config:
             try:
                 self.sender = {
@@ -69,11 +81,12 @@ class Config:
         logging.info("config file successfully parsed")
 
     @property
-    def token(self):
+    def token(self) -> Dict[str, str]:
         logging.debug("fetching oauth token")
         if os.getenv("GH_TOKEN"):
             return {"Authorization": "token {0}".format(os.getenv("GH_TOKEN"))}
+        return {}
 
     @property
-    def is_email_ready(self):
+    def is_email_ready(self) -> bool:
         return bool(self.sender and self.maintainers)
