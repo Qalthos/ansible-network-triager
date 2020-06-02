@@ -2,9 +2,14 @@ from datetime import date
 from email.message import EmailMessage
 from email.headerregistry import Address
 import smtplib
+from typing import List
+
+import prettytable
+
+from triager.triager import Maintainer
 
 
-def send_mail(content, sender, receivers=[]):
+def send_mail(content: prettytable.PrettyTable, sender: str, receivers: List[Maintainer]) -> None:
     msg = EmailMessage()
     msg["From"] = sender
     msg["To"] = _get_recipients(receivers)
@@ -23,7 +28,7 @@ def send_mail(content, sender, receivers=[]):
         smtp.send_message(msg)
 
 
-def _get_recipients(receivers):
+def _get_recipients(receivers: List[Maintainer]) -> List[Address]:
     return [
         Address(item["name"], addr_spec=item["email"])
         for item in receivers

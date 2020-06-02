@@ -1,15 +1,25 @@
 from datetime import datetime, timedelta
 import os
+from typing import Dict, List, Tuple, TypedDict
 
 import requests
 import yaml
 
 
 REQUEST_FMT = "https://api.github.com/repos/{0}/{1}/issues"
+Maintainer = TypedDict("Maintainer", {"name": str, "email": str})
+Issue = TypedDict("Issue", {"title": str, "type": str, "url": str})
 
 
 class Triager:
-    def __init__(self, cfg="config.yaml"):
+    org: str
+    repos: List[Tuple[str, str]]
+    last_triage_date: datetime
+
+    maintainers: List[Maintainer]
+    sender: str
+
+    def __init__(self, cfg: str = "config.yaml"):
         self.oauth_token = os.getenv("GH_TOKEN")
 
         with open(cfg, "r") as config_file:
@@ -32,8 +42,8 @@ class Triager:
             days=int(config["timedelta"])
         )
 
-    def triage(self):
-        issues = {}
+    def triage(self) -> Dict[str, List[Issue]]:
+        issues: Dict[str, List[Issue]] = {}
         for org, repo in self.repos:
             issues[repo] = []
             resp = requests.get(
@@ -61,6 +71,7 @@ class Triager:
 
         return issues
 
-    def _get_token(self):
+    def _get_token(self) -> Dict[str, str]:
         if self.oauth_token:
             return {"Authorization": "token {0}".format(self.oauth_token)}
+        return {}
