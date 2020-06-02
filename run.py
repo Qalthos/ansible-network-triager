@@ -5,10 +5,12 @@ from mailer import send_mail
 
 if __name__ == "__main__":
     triager = Triager()
-    triager.triage()
-    table = make_table(triager.triaged_data)
-    send_mail(
-        content=table,
-        sender=triager.sender,
-        receivers=triager.maintainers,
-    )
+    issues = triager.triage()
+
+    if issues:
+        table = make_table(issues)
+        send_mail(
+            content=table,
+            sender=triager.sender,
+            receivers=triager.maintainers,
+        )
