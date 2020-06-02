@@ -15,10 +15,7 @@ class Triager:
 
     def load_config(self, cfg):
         with open(cfg, "r") as config_file:
-            try:
-                config = yaml.safe_load(config_file)
-            except yaml.YAMLError as e:
-                raise e
+            config = yaml.safe_load(config_file)
 
         # Populate org and repos to triage
         self.org = config["org"]
