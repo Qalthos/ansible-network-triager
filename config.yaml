@@ -1,13 +1,15 @@
-org: ansible-collections
-repos:
-  - cisco.nxos
-  - cisco.ios
-  - cisco.iosxr
-  - arista.eos
-  - vyos.vyos
-  - junipernetworks.junos
-  - cisco.asa
-  - ansible.netcommon
+---
+orgs:
+  - name: ansible-collections
+    repos:
+      - cisco.nxos
+      - cisco.ios
+      - cisco.iosxr
+      - arista.eos
+      - vyos.vyos
+      - junipernetworks.junos
+      - cisco.asa
+      - ansible.netcommon
 maintainers:
   - name: Nilashish Chakraborty
     email: abc@test.local
