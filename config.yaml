@@ -7,7 +7,8 @@ repos:
   - vyos.vyos
   - junipernetworks.junos
   - cisco.asa
+  - ansible.netcommon
 maintainers:
   - name: Nilashish Chakraborty
-    email: test@abc.com
-timedelta: 7
+    email: abc@test.local
+timedelta: 14

@@ -64,7 +64,12 @@ class Triager:
                     if created_at >= self.last_triage_date:
                         # Issue/PR URL will always be unique and we can key on that
                         self.triaged_data[repo].append(
-                            {item["html_url"]: item["title"]}
+                            {
+                                item["html_url"]: item["title"],
+                                "Type": "Pull Request"
+                                if item.get("pull_request")
+                                else "Issue",
+                            }
                         )
 
     def _get_token(self):
