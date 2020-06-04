@@ -11,4 +11,5 @@ repos:
 maintainers:
   - name: Nilashish Chakraborty
     email: abc@test.local
+triage_address: from@test.local
 timedelta: 14

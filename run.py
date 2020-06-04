@@ -9,5 +9,6 @@ if __name__ == "__main__":
     table = TableMaker(triager.triaged_data).make_table()
     send_mail(
         content=table,
+        sender=triager.sender,
         receivers=triager.maintainers,
     )

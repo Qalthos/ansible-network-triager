@@ -4,9 +4,9 @@ from email.headerregistry import Address
 import smtplib
 
 
-def send_mail(content, receivers=[]):
+def send_mail(content, sender, receivers=[]):
     msg = EmailMessage()
-    msg["From"] = ""
+    msg["From"] = sender
     msg["To"] = _get_recipients(receivers)
     msg["Subject"] = "Ansible Network Weekly Triage - {0}".format(
         date.today().isoformat()
@@ -21,7 +21,7 @@ def send_mail(content, receivers=[]):
 
     with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
         smtp.starttls()
-        smtp.login("", "")
+        smtp.login(sender, "")
         smtp.send_message(msg)
 
 
