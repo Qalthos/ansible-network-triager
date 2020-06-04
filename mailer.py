@@ -1,32 +1,32 @@
+from datetime import date
+from email.message import EmailMessage
+from email.headerregistry import Address
 import smtplib
-from datetime import datetime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 
-class Mailer:
-    def __init__(self, content=None, receivers=[]):
-        self.smpt_session = smtplib.SMTP("smtp.gmail.com", 587)
-        self.content = content
-        self.subject = "Ansible Network Weekly Triage - {0}".format(
-            datetime.utcnow().strftime("%Y/%m/%d")
-        )
-        self.recepients = self._get_recepients(receivers)
+def send_mail(content, receivers=[]):
+    msg = EmailMessage()
+    msg["From"] = ""
+    msg["To"] = _get_recipients(receivers)
+    msg["Subject"] = "Ansible Network Weekly Triage - {0}".format(
+        date.today().isoformat()
+    )
+    msg.set_content(str(content))
+    msg.add_alternative(
+        content.get_html_string(
+            attributes={"border": 1, "style": "text-align:center"}
+        ),
+        subtype="html"
+    )
 
-    def send_mail(self):
-        self.smpt_session.starttls()
-        self.smpt_session.login("", "")
+    with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+        smtp.starttls()
+        smtp.login("", "")
+        smtp.send_message(msg)
 
-        msg = MIMEMultipart("alternative")
-        msg["To"] = ", ".join(self.recepients)
-        msg["Subject"] = self.subject
-        msg.attach(MIMEText(self.content, "html"))
 
-        self.smpt_session.sendmail("", self.recepients, msg.as_string())
-        self.smpt_session.quit()
-
-    def _get_recepients(self, receivers):
-        recepients = []
-        for item in receivers:
-            recepients.append(item["email"])
-        return recepients
+def _get_recipients(self, receivers):
+    return [
+        Address(item["name"], addr_spec=item["email"])
+        for item in receivers
+    ]
