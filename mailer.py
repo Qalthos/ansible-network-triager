@@ -8,9 +8,7 @@ def send_mail(content, sender, receivers=[]):
     msg = EmailMessage()
     msg["From"] = sender
     msg["To"] = _get_recipients(receivers)
-    msg["Subject"] = "Ansible Network Weekly Triage - {0}".format(
-        date.today().isoformat()
-    )
+    msg["Subject"] = f"Ansible Network Weekly Triage - {date.today().isoformat()}"
     msg.set_content(str(content))
     msg.add_alternative(
         content.get_html_string(
