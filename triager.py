@@ -14,6 +14,7 @@ class Triager:
         self.org = None
         self.repos = []
         self.maintainers = []
+        self.sender = ""
         self.last_triage_date = None
         self.oauth_token = os.getenv("GH_TOKEN")
         self.triaged_data = {}
@@ -36,6 +37,9 @@ class Triager:
             self.maintainers.append(
                 {"name": maintainer["name"], "email": maintainer["email"]}
             )
+
+        # Set address to send triage emails from
+        self.sender = cfg["triage_address"]
 
         # Set last triage date
         self.last_triage_date = datetime.utcnow() - timedelta(
