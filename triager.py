@@ -69,10 +69,9 @@ class Triager:
                         # Issue/PR URL will always be unique and we can key on that
                         self.triaged_data[repo].append(
                             {
-                                item["html_url"]: item["title"],
-                                "Type": "Pull Request"
-                                if item.get("pull_request")
-                                else "Issue",
+                                "url": item["html_url"],
+                                "title": item["title"],
+                                "type": "Pull Request" if item.get("pull_request") else "Issue",
                             }
                         )
 
