@@ -25,7 +25,7 @@ def send_mail(content, sender, receivers=[]):
         smtp.send_message(msg)
 
 
-def _get_recipients(self, receivers):
+def _get_recipients(receivers):
     return [
         Address(item["name"], addr_spec=item["email"])
         for item in receivers
