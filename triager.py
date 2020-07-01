@@ -33,7 +33,7 @@ class Triager:
     def triage(self):
         issues = {}
         for repo in self.repos:
-            issues[repo] = {}
+            issues[repo] = []
             resp = requests.get(
                 REQUEST_FMT.format(self.org, repo),
                 params={"status": "open"},
