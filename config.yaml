@@ -10,6 +10,9 @@ orgs:
       - junipernetworks.junos
       - cisco.asa
       - ansible.netcommon
+  - name: ansible
+    repos:
+      - pylibssh
 maintainers:
   - name: Nilashish Chakraborty
     email: abc@test.local
