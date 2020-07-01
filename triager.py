@@ -1,79 +1,63 @@
 import os
-import json
 from datetime import datetime, timedelta
 
 import requests
 import yaml
+
 
 REQUEST_FMT = "https://api.github.com/repos/{0}/{1}/issues"
 
 
 class Triager:
     def __init__(self, cfg="config.yaml"):
-        self.cfg = cfg
-        self.org = None
-        self.repos = []
-        self.maintainers = []
-        self.sender = ""
-        self.last_triage_date = None
         self.oauth_token = os.getenv("GH_TOKEN")
-        self.triaged_data = {}
-        self.load_config()
 
-    def load_config(self):
-        with open(self.cfg, "r") as config_file:
-            try:
-                cfg = yaml.safe_load(config_file)
-            except yaml.YAMLError as e:
-                raise e
+        with open(cfg, "r") as config_file:
+            config = yaml.safe_load(config_file)
 
         # Populate org and repos to triage
-        self.org = cfg["org"]
-        for repo in cfg["repos"]:
-            self.repos.append(repo)
+        self.org = config["org"]
+        self.repos = config["repos"]
 
         # Populate maintainers list
-        for maintainer in cfg["maintainers"]:
-            self.maintainers.append(
-                {"name": maintainer["name"], "email": maintainer["email"]}
-            )
+        self.maintainers = config["maintainers"]
 
         # Set address to send triage emails from
-        self.sender = cfg["triage_address"]
+        self.sender = config["triage_address"]
 
         # Set last triage date
         self.last_triage_date = datetime.utcnow() - timedelta(
-            days=int(cfg["timedelta"])
+            days=int(config["timedelta"])
         )
 
-        # pre-populate the final triaged data dict
-        for item in self.repos:
-            self.triaged_data.update({item: []})
-
     def triage(self):
+        issues = {}
         for repo in self.repos:
+            issues[repo] = {}
             resp = requests.get(
                 REQUEST_FMT.format(self.org, repo),
                 params={"status": "open"},
                 headers=self._get_token(),
             )
+            if not resp.ok:
+                print(resp.json()["message"])
+                return {}
+
             for item in resp.json():
                 if not item.get("assignee"):
-                    # The ISO-8601 standard (format in which the API returns the dates)
-                    # allows “Z” to be used instead of the zero offset, but
-                    # fromisoformat() cannot parse this.
-                    created_at = datetime.fromisoformat(
-                        item["created_at"].replace("Z", "")
+                    created_at = datetime.strptime(
+                        item["created_at"], "%Y-%m-%dT%H:%M:%SZ"
                     )
                     if created_at >= self.last_triage_date:
-                        # Issue/PR URL will always be unique and we can key on that
-                        self.triaged_data[repo].append(
+                        issues[repo].append(
                             {
                                 "url": item["html_url"],
                                 "title": item["title"],
                                 "type": "Pull Request" if item.get("pull_request") else "Issue",
                             }
                         )
+
+        return issues
 
     def _get_token(self):
         if self.oauth_token:
