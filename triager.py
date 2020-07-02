@@ -1,5 +1,5 @@
-import os
 from datetime import datetime, timedelta
+import os
 
 import requests
 import yaml
@@ -16,8 +16,10 @@ class Triager:
             config = yaml.safe_load(config_file)
 
         # Populate org and repos to triage
-        self.org = config["org"]
-        self.repos = config["repos"]
+        self.repos = []
+        for org in config["orgs"]:
+            for repo in org["repos"]:
+                self.repos.append((org["name"], repo))
 
         # Populate maintainers list
         self.maintainers = config["maintainers"]
@@ -32,10 +34,10 @@ class Triager:
 
     def triage(self):
         issues = {}
-        for repo in self.repos:
+        for org, repo in self.repos:
             issues[repo] = []
             resp = requests.get(
-                REQUEST_FMT.format(self.org, repo),
+                REQUEST_FMT.format(org, repo),
                 params={"status": "open"},
                 headers=self._get_token(),
             )
