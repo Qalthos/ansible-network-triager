@@ -35,10 +35,19 @@ class Triager:
     def triage(self):
         issues = {}
         for org, repo in self.repos:
-            issues[repo] = []
+            repo_name = repo["name"]
+            repo_labels = repo.get("labels", [])
+
+            params = dict(since=self.last_triage_date.isoformat())
+            if repo_labels:
+                params["labels"] = ",".join(repo_labels)
+            else:
+                params["assignee"] = "none"
+
+            issues[repo_name] = []
             resp = requests.get(
-                REQUEST_FMT.format(org, repo),
-                params={"status": "open"},
+                REQUEST_FMT.format(org, repo_name),
+                params=params,
                 headers=self._get_token(),
             )
             if not resp.ok:
@@ -46,18 +55,13 @@ class Triager:
                 return {}
 
             for item in resp.json():
-                if not item.get("assignee"):
-                    created_at = datetime.strptime(
-                        item["created_at"], "%Y-%m-%dT%H:%M:%SZ"
-                    )
-                    if created_at >= self.last_triage_date:
-                        issues[repo].append(
-                            {
-                                "url": item["html_url"],
-                                "title": item["title"],
-                                "type": "Pull Request" if item.get("pull_request") else "Issue",
-                            }
-                        )
+                issues[repo_name].append(
+                    {
+                        "url": item["html_url"],
+                        "title": item["title"],
+                        "type": "Pull Request" if item.get("pull_request") else "Issue",
+                    }
+                )
 
         return issues
 

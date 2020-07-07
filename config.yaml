@@ -2,17 +2,17 @@
 orgs:
   - name: ansible-collections
     repos:
-      - cisco.nxos
-      - cisco.ios
-      - cisco.iosxr
-      - arista.eos
-      - vyos.vyos
-      - junipernetworks.junos
-      - cisco.asa
-      - ansible.netcommon
+      - name: cisco.nxos
+      - name: cisco.ios
+      - name: cisco.iosxr
+      - name: arista.eos
+      - name: vyos.vyos
+      - name: junipernetworks.junos
+      - name: cisco.asa
+      - name: ansible.netcommon
   - name: ansible
     repos:
-      - pylibssh
+      - name: pylibssh
 maintainers:
   - name: Nilashish Chakraborty
     email: abc@test.local
