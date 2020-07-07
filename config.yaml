@@ -12,6 +12,11 @@ orgs:
       - name: ansible.netcommon
   - name: ansible
     repos:
+      - name: ansible
+        labels:
+          - networking
+          - needs_triage
+          - -backport
       - name: pylibssh
 maintainers:
   - name: Nilashish Chakraborty
