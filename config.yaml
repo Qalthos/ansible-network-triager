@@ -16,7 +16,6 @@ orgs:
         labels:
           - networking
           - needs_triage
-          - -backport
       - name: pylibssh
 maintainers:
   - name: Nilashish Chakraborty
