@@ -1,12 +1,13 @@
+import logging
 import textwrap
 
 import prettytable
-
 
 WRAPPER = textwrap.TextWrapper(width=80)
 
 
 def make_table(data):
+    logging.info("building table from triaged data")
     table = prettytable.PrettyTable(["Repo", "Title", "URL", "Type"])
     for repo, entries in data.items():
         for entry in entries:
@@ -18,4 +19,5 @@ def make_table(data):
                     entry["type"],
                 ]
             )
+    logging.info("successfully built table from triaged data")
     return table

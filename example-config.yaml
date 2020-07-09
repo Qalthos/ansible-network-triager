@@ -18,7 +18,11 @@ orgs:
           - needs_triage
       - name: pylibssh
 maintainers:
-  - name: Nilashish Chakraborty
-    email: abc@test.local
-triage_address: from@test.local
-timedelta: 14
+  - name: John Doe
+    email: john@doe.localhost
+  - name: Jane Doe
+    email: jane@doe.localhost
+triager:
+  email: testtriager@triage.example
+  password: superSecretP@ssWorD
+timedelta: 7
