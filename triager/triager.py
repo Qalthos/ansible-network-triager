@@ -1,10 +1,9 @@
 import logging
 import os
-import sys
-from datetime import datetime, timedelta
 
 import requests
-import yaml
+
+from triager.config import load_config
 
 REQUEST_FMT = "https://api.github.com/repos/{0}/{1}/issues"
 
@@ -12,49 +11,11 @@ REQUEST_FMT = "https://api.github.com/repos/{0}/{1}/issues"
 class Triager:
     def __init__(self, cfg):
         self.oauth_token = os.getenv("GH_TOKEN")
-
-        # select config.yaml from cwd
-        if not cfg:
-            logging.info("config file not specified, setting default")
-            cfg = "./config.yaml"
-
-        logging.info("attempting to read config file: {0}".format(cfg))
-
-        try:
-            with open(cfg, "r") as config_file:
-                config = yaml.safe_load(config_file)
-            logging.info("config file successfully loaded")
-        except FileNotFoundError as e:
-            logging.critical(e)
-            sys.exit()
-
-        logging.info("parsing information from config file")
-
-        # Populate org and repos to triage
-        self.repos = []
-        logging.debug("parsing orgs and repositories from config file")
-        for org in config["orgs"]:
-            for repo in org["repos"]:
-                self.repos.append((org["name"], repo))
-
-        # Populate maintainers list
-        logging.debug("parsing list of maintainers from config file")
-        self.maintainers = config["maintainers"]
-
-        # Set address to send triage emails from
-        logging.debug("parsing triager email and password from config file")
-        self.sender = {
-            "email": config.get("triager", {}).get("address"),
-            "password": config.get("triager", {}).get("password"),
-        }
-
-        # Set last triage date
-        logging.debug("setting last triage date")
-        self.last_triage_date = datetime.utcnow() - timedelta(
-            days=int(config["timedelta"])
-        )
-
-        logging.info("config file successfully parsed")
+        parsed_config = load_config(cfg)
+        self.repos = parsed_config["repos"]
+        self.maintainers = parsed_config["maintainers"]
+        self.last_triage_date = parsed_config["last_triage_date"]
+        self.sender = parsed_config["sender"]
 
     def triage(self):
         issues = {}
