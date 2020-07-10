@@ -2,7 +2,7 @@
 
 # Ansible Network Triager
 
-Set repositories of interest and run with `python -m triager -c /path/to/config.yaml`
+Set repositories of interest and run with `triager -c /path/to/config.yaml`
 
 This tool assists in weekly bug triages by fetching all issues and pull-requests 
 from repositories specified in the config file that were created (or updated) 
@@ -12,6 +12,10 @@ currently unassigned are pulled.
 
 By default, this prints out a table built from the fetched content to the console.
 When run with `--send-email` it also emails this table to all the listed maintainers.
+
+## Installation
+
+pip install git+https://github.com/ansible-network/ansible-network-triager.git@master
 
 ## Usage
 Options | Usage
@@ -25,6 +29,7 @@ Options | Usage
 ## Notes
 - An example config file (example-config.yaml) has been placed in this repository for reference.
 - Tested with Python 3.6
+- This tool gets installed as a part of `ansible-network-tools` package.
 
 ## Licensing
 

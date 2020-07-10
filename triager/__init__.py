@@ -3,9 +3,9 @@ import logging
 from datetime import datetime
 
 from triager.mailer import send_mail
+from triager.release import __ver__
 from triager.tablemaker import make_table
 from triager.triager import Triager
-from triager.release import __ver__, __author__
 
 
 def run(args):
