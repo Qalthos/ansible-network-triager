@@ -5,6 +5,7 @@ from datetime import datetime
 from triager.mailer import send_mail
 from triager.tablemaker import make_table
 from triager.triager import Triager
+from triager.release import __ver__, __author__
 
 
 def run(args):
@@ -33,7 +34,7 @@ def run(args):
             )
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="Triage issues and pull-requests from repositories of interest.",
         prog="Ansible Network Triager",
@@ -71,4 +72,17 @@ if __name__ == "__main__":
         help="send the triaged table as an email to the list of maintainers",
     )
 
-    run(parser.parse_args())
+    group.add_argument(
+        "--version", action="store_true", help="show version number",
+    )
+
+    args = parser.parse_args()
+
+    if args.version:
+        print("Ansible Network Triager, version {0}".format(__ver__))
+    else:
+        run(args)
+
+
+if __name__ == "__main__":
+    main()
