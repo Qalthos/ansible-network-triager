@@ -9,6 +9,6 @@ setup(
     license="GPLv3",
     packages=["triager"],
     install_requires=["pTable", "requests", "PyYAML"],
-    entry_points={"console_scripts": ["triager=triager:main"]},
+    entry_points={"console_scripts": ["triager=triager.__main__:main"]},
     zip_safe=False,
 )
