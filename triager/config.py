@@ -1,6 +1,6 @@
 import logging
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
 from email.headerregistry import Address
 
@@ -36,7 +36,8 @@ class Config:
         # Populate maintainers list
         logging.debug("parsing list of maintainers from config file")
         self.maintainers = [
-            Address(item["name"], addr_spec=item["email"]) for item in config["maintainers"]
+            Address(item["name"], addr_spec=item["email"])
+            for item in config.get("maintainers", [])
         ]
 
         # Set address to send triage emails from
