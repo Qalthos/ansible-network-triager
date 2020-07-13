@@ -1,55 +1,68 @@
 import logging
 import sys
+import os
 from datetime import datetime, timedelta
+from email.headerregistry import Address
 
 import yaml
 
 
-def load_config(cfg):
-    # select config.yaml from cwd
-    parsed_config = {}
-    if not cfg:
-        logging.info("config file not specified, setting default")
-        cfg = "./config.yaml"
+class Config:
+    def __init__(self, cfg):
+        # select config.yaml from cwd
+        if not cfg:
+            logging.info("config file not specified, setting default")
+            cfg = "./config.yaml"
 
-    logging.info("attempting to read config file: {0}".format(cfg))
+        logging.info("attempting to read config file: {0}".format(cfg))
 
-    try:
-        with open(cfg, "r") as config_file:
-            config = yaml.safe_load(config_file)
-        logging.info("config file successfully loaded")
-    except FileNotFoundError as e:
-        logging.critical(e)
-        sys.exit()
+        try:
+            with open(cfg, "r") as config_file:
+                config = yaml.safe_load(config_file)
+            logging.info("config file successfully loaded")
+        except FileNotFoundError as e:
+            logging.critical(e)
+            sys.exit()
 
-    logging.info("parsing information from config file")
+        logging.info("parsing information from config file")
 
-    # Populate org and repos to triage
-    repos = []
-    logging.debug("parsing orgs and repositories from config file")
-    for org in config["orgs"]:
-        for repo in org["repos"]:
-            repos.append((org["name"], repo))
+        # Populate org and repos to triage
+        self.repos = []
+        logging.debug("parsing orgs and repositories from config file")
+        for org in config["orgs"]:
+            for repo in org["repos"]:
+                self.repos.append((org["name"], repo))
 
-    parsed_config["repos"] = repos
+        # Populate maintainers list
+        logging.debug("parsing list of maintainers from config file")
+        self.maintainers = [
+            Address(item["name"], addr_spec=item["email"]) for item in config["maintainers"]
+        ]
 
-    # Populate maintainers list
-    logging.debug("parsing list of maintainers from config file")
-    parsed_config["maintainers"] = config["maintainers"]
+        # Set address to send triage emails from
+        logging.debug("parsing triager email and password from config file")
+        self.sender = None
+        if "triager" in config:
+            try:
+                self.sender = {
+                    "email": config["triager"]["address"],
+                    "password": config["triager"]["password"],
+                }
+            except KeyError as exc:
+                logging.error(f"triager config malformed, key {exc!s} not found")
+        else:
+            logging.debug("triager not found in config, will not send email")
 
-    # Set address to send triage emails from
-    logging.debug("parsing triager email and password from config file")
-    parsed_config["sender"] = {
-        "email": config.get("triager", {}).get("address"),
-        "password": config.get("triager", {}).get("password"),
-    }
+        # Set last triage date
+        logging.debug("setting last triage date")
+        self.last_triage_date = datetime.utcnow() - timedelta(
+            days=int(config["timedelta"])
+        )
 
-    # Set last triage date
-    logging.debug("setting last triage date")
-    parsed_config["last_triage_date"] = datetime.utcnow() - timedelta(
-        days=int(config["timedelta"])
-    )
+        logging.info("config file successfully parsed")
 
-    logging.info("config file successfully parsed")
-
-    return parsed_config
+    @property
+    def token(self):
+        logging.debug("fetching oauth token")
+        if os.getenv("GH_TOKEN"):
+            return {"Authorization": "token {0}".format(self.oauth_token)}

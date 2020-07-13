@@ -7,8 +7,8 @@ setup(
     url="http://github.com/ansible-network/ansible-network-triager",
     author="Ansible Network Team",
     license="GPLv3",
-    packages=["triager",],
+    packages=["triager"],
     install_requires=["pTable", "requests", "PyYAML"],
-    entry_points={"console_scripts": ["triager=triager:main",],},
+    entry_points={"console_scripts": ["triager=triager:main"]},
     zip_safe=False,
 )
