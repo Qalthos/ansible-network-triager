@@ -51,6 +51,8 @@ class Config:
                 }
             except KeyError as exc:
                 logging.error(f"triager config malformed, key {exc!s} not found")
+            except TypeError:
+                logging.error("triager config malformed, should be a dictionary")
         else:
             logging.debug("triager not found in config, will not send email")
 
@@ -67,3 +69,7 @@ class Config:
         logging.debug("fetching oauth token")
         if os.getenv("GH_TOKEN"):
             return {"Authorization": "token {0}".format(self.oauth_token)}
+
+    @property
+    def is_email_ready(self):
+        return bool(self.sender and self.maintainers)

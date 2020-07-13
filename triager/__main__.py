@@ -2,11 +2,11 @@ import argparse
 import logging
 from datetime import datetime
 
+from triager import triager
 from triager.config import Config
 from triager.mailer import send_mail
 from triager.release import __ver__
 from triager.tablemaker import make_table
-from triager import triager
 
 
 def run(args):
@@ -27,7 +27,7 @@ def run(args):
         logging.info("Printing triaged table to console")
         print(table)
 
-        if args.send_email is True and config.sender is not None:
+        if args.send_email is True and config.is_email_ready:
             send_mail(content=table, config=config)
 
 
