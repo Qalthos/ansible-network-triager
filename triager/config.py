@@ -68,7 +68,7 @@ class Config:
     def token(self):
         logging.debug("fetching oauth token")
         if os.getenv("GH_TOKEN"):
-            return {"Authorization": "token {0}".format(self.oauth_token)}
+            return {"Authorization": "token {0}".format(os.getenv("GH_TOKEN"))}
 
     @property
     def is_email_ready(self):
