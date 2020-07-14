@@ -2,9 +2,11 @@ import argparse
 import logging
 from datetime import datetime
 
+from triager import triager
+from triager.config import Config
 from triager.mailer import send_mail
+from triager.release import __ver__
 from triager.tablemaker import make_table
-from triager.triager import Triager
 
 
 def run(args):
@@ -17,23 +19,19 @@ def run(args):
             format="%(levelname)-10s%(message)s", level=logging_level
         )
 
-    triager = Triager(cfg=args.config_file)
-    issues = triager.triage()
+    config = Config(args.config_file)
+    issues = triager.triage(config)
 
     if issues:
         table = make_table(issues)
         logging.info("Printing triaged table to console")
         print(table)
 
-        if args.send_email is True:
-            send_mail(
-                content=table,
-                sender=triager.sender,
-                receivers=triager.maintainers,
-            )
+        if args.send_email is True and config.is_email_ready:
+            send_mail(content=table, config=config)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="Triage issues and pull-requests from repositories of interest.",
         prog="Ansible Network Triager",
@@ -71,4 +69,17 @@ if __name__ == "__main__":
         help="send the triaged table as an email to the list of maintainers",
     )
 
-    run(parser.parse_args())
+    group.add_argument(
+        "--version", action="store_true", help="show version number",
+    )
+
+    args = parser.parse_args()
+
+    if args.version:
+        print("Ansible Network Triager, version {0}".format(__ver__))
+    else:
+        run(args)
+
+
+if __name__ == "__main__":
+    main()
