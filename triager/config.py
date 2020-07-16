@@ -8,16 +8,16 @@ import yaml
 
 
 class Config:
-    def __init__(self, cfg):
+    def __init__(self, config_location):
         # select config.yaml from cwd
-        if not cfg:
+        if not config_location:
             logging.info("config file not specified, setting default")
-            cfg = "./config.yaml"
+            config_location = "./config.yaml"
 
-        logging.info("attempting to read config file: {0}".format(cfg))
+        logging.info(f"attempting to read config file: {config_location}")
 
         try:
-            with open(cfg, "r") as config_file:
+            with open(config_location, "r") as config_file:
                 config = yaml.safe_load(config_file)
             logging.info("config file successfully loaded")
         except FileNotFoundError as e:
@@ -50,9 +50,13 @@ class Config:
                     "password": config["triager"]["password"],
                 }
             except KeyError as exc:
-                logging.error(f"triager config malformed, key {exc!s} not found")
+                logging.error(
+                    f"triager config malformed, key {exc!s} not found"
+                )
             except TypeError:
-                logging.error("triager config malformed, should be a dictionary")
+                logging.error(
+                    "triager config malformed, should be a dictionary"
+                )
         else:
             logging.debug("triager not found in config, will not send email")
 
